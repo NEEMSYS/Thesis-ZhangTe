@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*-
 # Preprocessing the dataset through delete floder size smaller than 5MB
+# Python3.x
 import os
 import stat 
 import shutil
