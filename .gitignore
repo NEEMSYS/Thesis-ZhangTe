@@ -1,6 +1,7 @@
 *.txt
 TinyOS-Benchmark/dataset/
 *.pkl
+\#*\#
 
 # Python reglur
 # Byte-compiled / optimized / DLL files
