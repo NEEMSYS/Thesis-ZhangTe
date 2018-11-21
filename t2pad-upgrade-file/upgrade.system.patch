@@ -1,0 +1,97 @@
+diff -Naur ./system/SchedulerBasicP.nc /media/tete/F/tinyos-main/tos/system/SchedulerBasicP.nc
+--- ./system/SchedulerBasicP.nc	2017-12-23 17:16:23.159638494 +0800
++++ /media/tete/F/tinyos-main/tos/system/SchedulerBasicP.nc	2017-12-23 16:56:07.439271400 +0800
+@@ -1,7 +1,7 @@
+ // $Id: SchedulerBasicP.nc,v 1.11 2010-06-29 22:07:56 scipio Exp $
+ 
+ /*
+- * Copyright (c) 2000-2003 The Regents of the University  of California.  
++ * Copyright (c) 2000-2003 The Regents of the University  of California.
+  * All rights reserved.
+  *
+  * Redistribution and use in source and binary forms, with or without
+@@ -34,9 +34,9 @@
+  * Copyright (c) 2002-2003 Intel Corporation
+  * All rights reserved.
+  *
+- * This file is distributed under the terms in the attached INTEL-LICENSE     
++ * This file is distributed under the terms in the attached INTEL-LICENSE
+  * file. If you do not find these files, copies can be found by writing to
+- * Intel Research Berkeley, 2150 Shattuck Avenue, Suite 1300, Berkeley, CA, 
++ * Intel Research Berkeley, 2150 Shattuck Avenue, Suite 1300, Berkeley, CA,
+  * 94704.  Attention:  Intel License Inquiry.
+  */
+ 
+@@ -51,6 +51,8 @@
+ 
+ #include <hardware.h>
+ 
++volatile uint8_t watch_task_id = 0;
++
+ module SchedulerBasicP @safe() {
+   provides interface Scheduler;
+   provides interface TaskBasic[uint8_t id];
+@@ -93,7 +95,7 @@
+       return NO_TASK;
+     }
+   }
+-  
++
+   bool isWaiting( uint8_t id )
+   {
+     return (m_next[id] != NO_TASK) || (m_tail == id);
+@@ -120,7 +122,7 @@
+       return FALSE;
+     }
+   }
+-  
++
+   command void Scheduler.init()
+   {
+     atomic
+@@ -130,18 +132,21 @@
+       m_tail = NO_TASK;
+     }
+   }
+-  
++
+   command bool Scheduler.runNextTask()
+   {
+     uint8_t nextTask;
++
+     atomic
+     {
+       nextTask = popTask();
++
+       if( nextTask == NO_TASK )
+       {
+-	return FALSE;
++	       return FALSE;
+       }
+     }
++
+     signal TaskBasic.runTask[nextTask]();
+     return TRUE;
+   }
+@@ -159,6 +164,7 @@
+ 	  call McuSleep.sleep();
+ 	}
+       }
++      watch_task_id = nextTask;
+       signal TaskBasic.runTask[nextTask]();
+     }
+   }
+@@ -166,7 +172,7 @@
+   /**
+    * Return SUCCESS if the post succeeded, EBUSY if it was already posted.
+    */
+-  
++
+   async command error_t TaskBasic.postTask[uint8_t id]()
+   {
+     atomic { return pushTask(id) ? SUCCESS : EBUSY; }
+@@ -176,4 +182,3 @@
+   {
+   }
+ }
+-

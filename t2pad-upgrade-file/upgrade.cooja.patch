@@ -1,0 +1,761 @@
+diff -Naur cooja/apps/mspsim/src/org/contikios/cooja/mspmote/plugins/MspCLI.java ../../x/contiki/tools/cooja/apps/mspsim/src/org/contikios/cooja/mspmote/plugins/MspCLI.java
+--- cooja/apps/mspsim/src/org/contikios/cooja/mspmote/plugins/MspCLI.java	2017-12-23 17:37:13.597643526 +0800
++++ ../../x/contiki/tools/cooja/apps/mspsim/src/org/contikios/cooja/mspmote/plugins/MspCLI.java	2017-12-23 17:42:21.104669052 +0800
+@@ -74,8 +74,10 @@
+   private int historyPos = 0;
+   private int historyCount = 0;
+ 
++
+   public MspCLI(Mote mote, Simulation simulationToVisualize, Cooja gui) {
+     super("Msp CLI (" + mote.getID() + ')', gui);
++
+     this.mspMote = (MspMote) mote;
+ 
+     final Container panel = getContentPane();
+@@ -85,6 +87,7 @@
+     logArea.setEditable(false);
+     panel.add(new JScrollPane(logArea), BorderLayout.CENTER);
+ 
++
+     LineListener lineListener = new LineListener() {
+       public void lineRead(String line) {
+         addCLIData(line);
+@@ -92,6 +95,7 @@
+     };
+     PrintStream po = new PrintStream(new LineOutputStream(lineListener));
+     final CommandContext commandContext = new CommandContext(mspMote.getCLICommandHandler(), null, "", new String[0], 1, null);
++
+     commandContext.out = po;
+     commandContext.err = po;
+ 
+@@ -105,6 +109,7 @@
+     popupMenu.add(clearItem);
+     logArea.setComponentPopupMenu(popupMenu);
+ 
++
+     ActionListener action = new ActionListener() {
+       public void actionPerformed(ActionEvent e) {
+         String command = trim(commandField.getText());
+@@ -183,9 +188,11 @@
+     cliResponseAggregator.start();
+ 
+     panel.add(commandField, BorderLayout.SOUTH);
++
+     setSize(500,500);
+   }
+ 
++  
+   public void closePlugin() {
+     cliResponseAggregator.stop();
+   }
+@@ -209,8 +216,10 @@
+         sb.append(l);
+         sb.append('\n');
+       }
++
+       logArea.setText(sb.toString());
+       logArea.setCaretPosition(sb.length());
++
+     }
+   };
+ 
+diff -Naur cooja/build.xml ../../x/contiki/tools/cooja/build.xml
+--- cooja/build.xml	2017-12-23 17:37:13.601643621 +0800
++++ ../../x/contiki/tools/cooja/build.xml	2017-12-23 17:42:21.108669140 +0800
+@@ -66,6 +66,13 @@
+         <pathelement location="lib/log4j.jar"/>
+         <pathelement location="lib/jsyntaxpane.jar"/>
+         <pathelement location="lib/swingx-all-1.6.4.jar"/>
++        
++         <!-- //tete_begin  使用MspCLI类而导入的包 -->
++        <pathelement location="apps/mspsim/lib/cooja_mspsim.jar"/>
++        <pathelement location="apps/mspsim/lib/mspsim.jar"/>
++        <pathelement location="apps/mspsim/lib/coffee.jar"/>
++        <pathelement location="apps/mspsim/lib/jipv6.jar"/>
++        <!-- //tete_end -->
+       </classpath>
+     </javadoc>
+   </target>
+@@ -81,6 +88,13 @@
+         <pathelement location="lib/log4j.jar"/>
+         <pathelement location="lib/jsyntaxpane.jar"/>
+         <pathelement location="lib/swingx-all-1.6.4.jar"/>
++
++         <!-- //tete_begin  使用MspCLI类而导入的包 -->
++        <pathelement location="apps/mspsim/lib/cooja_mspsim.jar"/>
++        <pathelement location="apps/mspsim/lib/mspsim.jar"/>
++        <pathelement location="apps/mspsim/lib/coffee.jar"/>
++        <pathelement location="apps/mspsim/lib/jipv6.jar"/>
++        <!-- //tete_end -->
+       </classpath>
+     </javac>
+   </target>
+@@ -100,7 +114,7 @@
+     <ant antfile="build.xml" dir="apps/avrora" target="clean" inheritAll="false"/>
+     <ant antfile="build.xml" dir="apps/serial_socket" target="clean" inheritAll="false"/>
+     <ant antfile="build.xml" dir="apps/collect-view" target="clean" inheritAll="false"/>
+-	<ant antfile="build.xml" dir="apps/powertracker" target="clean" inheritAll="false"/>
++  <ant antfile="build.xml" dir="apps/powertracker" target="clean" inheritAll="false"/>
+   </target>
+ 
+   <target name="run" depends="init, compile, jar, copy configs">
+@@ -114,6 +128,13 @@
+         <pathelement location="lib/log4j.jar"/>
+         <pathelement location="lib/jsyntaxpane.jar"/>
+         <pathelement location="lib/swingx-all-1.6.4.jar"/>
++
++         <!-- //tete_begin  使用MspCLI类而导入的包 -->
++        <pathelement location="apps/mspsim/lib/cooja_mspsim.jar"/>
++        <pathelement location="apps/mspsim/lib/mspsim.jar"/>
++        <pathelement location="apps/mspsim/lib/coffee.jar"/>
++        <pathelement location="apps/mspsim/lib/jipv6.jar"/>
++        <!-- //tete_end -->
+       </classpath>
+     </java>
+   </target>
+@@ -130,6 +151,13 @@
+         <pathelement location="lib/log4j.jar"/>
+         <pathelement location="lib/jsyntaxpane.jar"/>
+         <pathelement location="lib/swingx-all-1.6.4.jar"/>
++
++          <!-- //tete_begin  使用MspCLI类而导入的包 -->
++        <pathelement location="apps/mspsim/lib/cooja_mspsim.jar"/>
++        <pathelement location="apps/mspsim/lib/mspsim.jar"/>
++        <pathelement location="apps/mspsim/lib/coffee.jar"/>
++        <pathelement location="apps/mspsim/lib/jipv6.jar"/>
++        <!-- //tete_end -->
+       </classpath>
+     </java>
+   </target>
+@@ -212,6 +240,11 @@
+         <pathelement location="lib/jdom.jar"/>
+         <pathelement location="lib/log4j.jar"/>
+         <pathelement location="lib/jsyntaxpane.jar"/>
++
++        <pathelement location="apps/mspsim/lib/cooja_mspsim.jar"/>
++        <pathelement location="apps/mspsim/lib/mspsim.jar"/>
++        <pathelement location="apps/mspsim/lib/coffee.jar"/>
++        <pathelement location="apps/mspsim/lib/jipv6.jar"/>
+       </classpath>
+     </java>
+   </target>
+diff -Naur cooja/java/org/contikios/cooja/Cooja.java ../../x/contiki/tools/cooja/java/org/contikios/cooja/Cooja.java
+--- cooja/java/org/contikios/cooja/Cooja.java	2017-12-23 17:37:13.605643717 +0800
++++ ../../x/contiki/tools/cooja/java/org/contikios/cooja/Cooja.java	2017-12-23 17:42:21.112669228 +0800
+@@ -118,6 +118,7 @@
+ import org.apache.log4j.BasicConfigurator;
+ import org.apache.log4j.Logger;
+ import org.apache.log4j.xml.DOMConfigurator;
++import org.contikios.cooja.mspmote.MspMote;
+ import org.jdom.Document;
+ import org.jdom.Element;
+ import org.jdom.JDOMException;
+@@ -137,6 +138,7 @@
+ import org.contikios.cooja.dialogs.ProjectDirectoriesDialog;
+ import org.contikios.cooja.plugins.MoteTypeInformation;
+ import org.contikios.cooja.plugins.ScriptRunner;
++import org.contikios.cooja.plugins.ScriptParser;
+ import org.contikios.cooja.plugins.SimControl;
+ import org.contikios.cooja.plugins.SimInformation;
+ import org.contikios.cooja.util.ExecuteJAR;
+@@ -154,6 +156,7 @@
+  * @author Fredrik Osterlind
+  */
+ public class Cooja extends Observable {
++
+   private static JFrame frame = null;
+   private static JApplet applet = null;
+   private static final long serialVersionUID = 1L;
+@@ -414,7 +417,7 @@
+         currentProjects.add(new COOJAProject(projectDir));
+       }
+     }
+-    
++
+     //Scan for projects
+     String searchProjectDirs = getExternalToolsSetting("PATH_APPSEARCH", null);
+     if (searchProjectDirs != null && searchProjectDirs.length() > 0) {
+@@ -1318,6 +1321,10 @@
+       frame = new JFrame(WINDOW_TITLE);
+     }
+     Cooja gui = new Cooja(desktop);
++    //tete_begin
++    ScriptParser.cooja = gui;
++
++//tete_end
+     if (vis) {
+       configureFrame(gui, false);
+     }
+@@ -1570,7 +1577,7 @@
+     if (pluginClassNames != null) {
+       for (String pluginClassName : pluginClassNames) {
+         Class<? extends Plugin> pluginClass = tryLoadClass(this, Plugin.class,
+-            pluginClassName);
++                pluginClassName);
+ 
+         if (pluginClass != null) {
+           registerPlugin(pluginClass);
+@@ -1789,11 +1796,15 @@
+     return null;
+   }
+ 
+-  public Plugin tryStartPlugin(final Class<? extends Plugin> pluginClass,
+-      final Cooja argGUI, final Simulation argSimulation, final Mote argMote) {
+-    return tryStartPlugin(pluginClass, argGUI, argSimulation, argMote, true);
+-  }
+-
++  //tete_begin
++  //这个函数我只改变了参数的类型(改为Object), 并且原来的类型我忘了.
++  //这是一个历史遗留问题,由于我一开始类路径设置错误给逼的.
++  //2017.06.08恰巧高考之后,这个方法就不再被使用,废物
++  public Plugin tryStartPlugin(Object pluginClass,
++	      final Cooja argGUI, final Simulation argSimulation, final Object argMote) {
++	    return tryStartPlugin((Class<? extends Plugin>)pluginClass, argGUI, argSimulation, (Mote)argMote, true);
++}
++  //tete_end
+   public Plugin startPlugin(final Class<? extends Plugin> pluginClass,
+       final Cooja argGUI, final Simulation argSimulation, final Mote argMote)
+   throws PluginConstructionException
+@@ -1828,9 +1839,12 @@
+ 
+     try {
+       if (pluginType == PluginType.MOTE_PLUGIN) {
++
+         if (argGUI == null) {
+           throw new PluginConstructionException("No GUI argument for mote plugin");
+         }
++    	//tete_end
++
+         if (argSimulation == null) {
+           throw new PluginConstructionException("No simulation argument for mote plugin");
+         }
+@@ -1839,8 +1853,8 @@
+         }
+ 
+         plugin =
+-          pluginClass.getConstructor(new Class[] { Mote.class, Simulation.class, Cooja.class })
+-          .newInstance(argMote, argSimulation, argGUI);
++          pluginClass.getConstructor(new Class[]{Mote.class, Simulation.class, Cooja.class})
++                  .newInstance(argMote, argSimulation, argGUI);
+ 
+       } else if (pluginType == PluginType.SIM_PLUGIN || pluginType == PluginType.SIM_STANDARD_PLUGIN
+     		  || pluginType == PluginType.SIM_CONTROL_PLUGIN) {
+@@ -1925,7 +1939,7 @@
+     try {
+       if (pluginType == PluginType.COOJA_PLUGIN || pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
+         pluginClass.getConstructor(new Class[] { Cooja.class });
+-      } else if (pluginType == PluginType.SIM_PLUGIN || pluginType == PluginType.SIM_STANDARD_PLUGIN 
++      } else if (pluginType == PluginType.SIM_PLUGIN || pluginType == PluginType.SIM_STANDARD_PLUGIN
+     		  || pluginType == PluginType.SIM_CONTROL_PLUGIN) {
+         pluginClass.getConstructor(new Class[] { Simulation.class, Cooja.class });
+       } else if (pluginType == PluginType.MOTE_PLUGIN) {
+@@ -2688,7 +2702,7 @@
+   public void doQuit(boolean askForConfirmation) {
+     doQuit(askForConfirmation, 0);
+   }
+-  
++
+   public void doQuit(boolean askForConfirmation, int exitCode) {
+     if (isVisualizedInApplet()) {
+       return;
+@@ -3132,8 +3146,7 @@
+   public static void main(String[] args) {
+     String logConfigFile = null;
+     Long randomSeed = null;
+-    
+-    
++
+     for (String element : args) {
+       if (element.startsWith("-log4j=")) {
+         String arg = element.substring("-log4j=".length());
+@@ -3191,10 +3204,10 @@
+           Cooja.externalToolsUserSettingsFileReadOnly = true;
+         }
+       }
+-      
++
+       if (element.startsWith("-random-seed=")) {
+         String arg = element.substring("-random-seed=".length());
+-        try {          
++        try {
+           randomSeed =  Long.valueOf(arg);
+         } catch (Exception e) {
+           logger.error("Failed to convert \"" + arg +"\" to an integer.");
+@@ -3229,13 +3242,15 @@
+       if (sim == null) {
+         System.exit(1);
+       }
+-      
++
+ 
+     } else if (args.length > 0 && args[0].startsWith("-nogui=")) {
+ 
+       /* Load simulation */
+       String config = args[0].substring("-nogui=".length());
+       File configFile = new File(config);
++
++
+       Simulation sim = quickStartSimulationConfig(configFile, false, randomSeed);
+       if (sim == null) {
+         System.exit(1);
+@@ -3251,14 +3266,17 @@
+     	}
+       }
+ 
++
+       /* Backwards compatibility:
+        * simulation has no control plugin, but has external (old style) test script.
+        * We will manually start a test editor from here. */
+       if (!hasController) {
+         File scriptFile = new File(config.substring(0, config.length()-4) + ".js");
++
+         if (scriptFile.exists()) {
+           logger.info("Detected old simulation test, starting test editor manually from: " + scriptFile);
+           ScriptRunner plugin = (ScriptRunner) gui.tryStartPlugin(ScriptRunner.class, gui, sim, null);
++
+           if (plugin == null) {
+             System.exit(1);
+           }
+@@ -3276,7 +3294,7 @@
+       }
+ 
+ 
+-      
++
+     } else if (args.length > 0 && args[0].startsWith("-applet")) {
+ 
+       String tmpWebPath=null, tmpBuildPath=null, tmpEsbFirmware=null, tmpSkyFirmware=null;
+@@ -3428,7 +3446,7 @@
+           Collection<Element> config = ((Element) element).getChildren();
+           newSim = new Simulation(this);
+           System.gc();
+-          
++
+           boolean createdOK = newSim.setConfigXML(config, isVisualized(), quick, manualRandomSeed);
+           if (!createdOK) {
+             logger.info("Simulation not loaded");
+@@ -3461,7 +3479,7 @@
+    * Saves current simulation configuration to given file and notifies
+    * observers.
+    *
+-   * @see #loadSimulationConfig(File, boolean)
++   * @see /loadSimulationConfig(File, boolean)
+    * @param file
+    *          File to write
+    */
+@@ -3643,7 +3661,7 @@
+    */
+   public boolean setPluginsConfigXML(Collection<Element> configXML,
+       Simulation simulation, boolean visAvailable, boolean quick) {
+-      
++
+     for (final Element pluginElement : configXML.toArray(new Element[0])) {
+       if (pluginElement.getName().equals("plugin")) {
+ 
+@@ -4177,7 +4195,7 @@
+ 	  {"[COOJA_DIR]","PATH_COOJA","/tools/cooja"},
+ 	  {"[APPS_DIR]","PATH_APPS","/tools/cooja/apps"}
+   };
+-  
++
+   private File createContikiRelativePath(File file) {
+     try {
+     	int elem = PATH_IDENTIFIER.length;
+@@ -4186,32 +4204,32 @@
+     	int match = -1;
+     	int mlength = 0;
+     	String fileCanonical = file.getCanonicalPath();
+-      
++
+     	//No so nice, but goes along with GUI.getExternalToolsSetting
+     	String defp = Cooja.getExternalToolsSetting("PATH_CONTIKI", null);
+-    	
+-    	
++
++
+ 		for(int i = 0; i < elem; i++){
+-			path[i] = new File(Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1], defp + PATH_IDENTIFIER[i][2]));			
++			path[i] = new File(Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1], defp + PATH_IDENTIFIER[i][2]));
+ 			canonicals[i] = path[i].getCanonicalPath();
+ 			if (fileCanonical.startsWith(canonicals[i])){
+ 				if(mlength < canonicals[i].length()){
+ 					mlength = canonicals[i].length();
+ 					match = i;
+ 				}
+- 
++
+ 	    	}
+ 		}
+-      
++
+ 	    if(match == -1) return null;
+ 
+ 
+ 	    /* Replace Contiki's canonical path with Contiki identifier */
+         String portablePath = fileCanonical.replaceFirst(
+-          java.util.regex.Matcher.quoteReplacement(canonicals[match]), 
++          java.util.regex.Matcher.quoteReplacement(canonicals[match]),
+           java.util.regex.Matcher.quoteReplacement(PATH_IDENTIFIER[match][0]));
+         File portable = new File(portablePath);
+-      
++
+         /* Verify conversion */
+         File verify = restoreContikiRelativePath(portable);
+         if (verify == null || !verify.exists()) {
+@@ -4225,43 +4243,43 @@
+       return null;
+     }
+   }
+-  
+-  
++
++
+   private File restoreContikiRelativePath(File portable) {
+   	int elem = PATH_IDENTIFIER.length;
+   	File path = null;
+ 	String canonical = null;
+-	
++
+     try {
+-    	    	
++
+     	String portablePath = portable.getPath();
+-    	
++
+         int i = 0;
+         //logger.info("PPATH: " + portablePath);
+-        
++
+     	for(; i < elem; i++){
+     		if (portablePath.startsWith(PATH_IDENTIFIER[i][0])) break;
+-    		
++
+     	}
+-    	
+-    	
++
++
+     	if(i == elem) return null;
+     	//logger.info("Found: " + PATH_IDENTIFIER[i][0]);
+-    	
++
+     	//No so nice, but goes along with GUI.getExternalToolsSetting
+     	String defp = Cooja.getExternalToolsSetting("PATH_CONTIKI", null);
+     	path = new File(Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1], defp + PATH_IDENTIFIER[i][2]));
+-    	
++
+     	//logger.info("Config: " + PATH_IDENTIFIER[i][1] + ", " + defp + PATH_IDENTIFIER[i][2] + " = " + path.toString());
+ 		canonical = path.getCanonicalPath();
+-    	
+-		
++
++
+     	File absolute = new File(portablePath.replace(PATH_IDENTIFIER[i][0], canonical));
+ 		if(!absolute.exists()){
+ 			logger.warn("Replaced " + portable  + " with " + absolute.toString() + " (default: "+ defp + PATH_IDENTIFIER[i][2] +"), but could not find it. This does not have to be an error, as the file might be created later.");
+ 		}
+-    	     
+-      
++
++
+     	return absolute;
+     } catch (IOException e) {
+     	return null;
+@@ -4736,4 +4754,3 @@
+   };
+ 
+ }
+-
+diff -Naur cooja/java/org/contikios/cooja/plugins/LogScriptEngine.java ../../x/contiki/tools/cooja/java/org/contikios/cooja/plugins/LogScriptEngine.java
+--- cooja/java/org/contikios/cooja/plugins/LogScriptEngine.java	2017-12-23 17:37:13.613643908 +0800
++++ ../../x/contiki/tools/cooja/java/org/contikios/cooja/plugins/LogScriptEngine.java	2017-12-23 17:42:21.120669404 +0800
+@@ -102,7 +102,7 @@
+   private long nextProgress;
+ 
+   private int exitCode = 0;
+-  
++
+   public LogScriptEngine(Simulation simulation) {
+     this.simulation = simulation;
+   }
+diff -Naur cooja/java/org/contikios/cooja/plugins/ScriptParser.java ../../x/contiki/tools/cooja/java/org/contikios/cooja/plugins/ScriptParser.java
+--- cooja/java/org/contikios/cooja/plugins/ScriptParser.java	2017-12-23 17:37:13.617644004 +0800
++++ ../../x/contiki/tools/cooja/java/org/contikios/cooja/plugins/ScriptParser.java	2017-12-23 17:42:21.124669491 +0800
+@@ -39,6 +39,14 @@
+ 
+ import org.contikios.cooja.Simulation;
+ 
++// tete_begin
++import java.util.Random;
++import java.util.ArrayList;
++
++import org.contikios.cooja.mspmote.MspMote;
++import org.contikios.cooja.Cooja;
++//tete_end
++
+ public class ScriptParser {
+   private static final long serialVersionUID = 1L;
+   private static Logger logger = Logger.getLogger(ScriptParser.class);
+@@ -48,6 +56,15 @@
+ 
+   private String code = null;
+ 
++  //tete_begin
++    /**
++     * parse script to start up CLI.
++     */
++    static public Object pluginClasses = null;
++    static public Cooja cooja = null;
++    private static Simulation simulation = null;
++  //tete_end
++
+   public ScriptParser(String code) throws ScriptSyntaxErrorException {
+ 
+     code = fixNewlines(code);
+@@ -56,6 +73,11 @@
+ 
+     code = stripSingleLineComments(code);
+ 
++    //tete_begin
++    code = replaceRandom(code);
++    code = parseMspCLIWithAction(code);
++    //tete_end
++
+     code = parseTimeout(code);
+ 
+     code = parseTimeoutWithAction(code);
+@@ -113,6 +135,146 @@
+     return code;
+   }
+ 
++//tete_begin
++// part of MspCLI
++// 从ScriptRuner获得simulation对象,可以从该对象获得所有仿真节点
++  public static void setSimulation(Simulation sim){
++      ScriptParser.simulation = sim;
++  }
++
++  private String parseMspCLIWithAction(String code) throws ScriptSyntaxErrorException{
++    // 用来存储多条指令
++    ArrayList<String[]> decr = new ArrayList<String[]>();
++
++    Pattern pattern = Pattern.compile("MspCLI\\((.*?)\\)");
++    Matcher matcher = pattern.matcher(code);
++    int i = 0;
++    while(matcher.find()){
++       i++;
++       String[] tmp = matcher.group(1).split(",");
++       // 命令只有两个参数
++       if(tmp.length != 2)
++         throw new IllegalArgumentException("The " + i + "'th of @MspCLI(number, command) should have only two arguments.");
++       tmp[0] = tmp[0].trim();
++       tmp[1] = tmp[1].trim();
++       decr.add(tmp);
++    }
++    // 执行MspCLI
++    launchMspCLI(decr);
++    matcher.reset(code);
++    code = code.replaceAll("MspCLI\\((.*?)\\)", ";");
++    return code;
++  }
++
++  private void launchMspCLI(ArrayList<String[]> cmd){
++	  int moteNum = 0;
++
++    if (cmd.size() == 0)
++      return;
++
++
++    for(String[] str : cmd){
++        int index = 0;
++        for (Object mote: this.simulation.getMotes()) {
++
++            /*
++            判断是否为命令参数指定的节点
++            这里的逻辑其实有些多余, 之前这样来判断是否为指定节点是因为使用了
++            MspCLI类,这个类需要传入mote参数,getMotes()返回的节点按编号存储
++            但是现在已经改为使用mote自带的CLI,因此,每个mote的CLI就是它自己的
++             */
++            if(++index == Integer.parseInt(str[0])) {
++                ((MspMote)mote).executeCLICommand(str[1]);
++                System.out.println("Start up " + str[0] + "'th and command is <" + str[1] + ">");
++            }
++        }
++    }
++
++  }
++//tete_end
++
++//tete_begin
++// part of reverse function and kill function
++/*
++ *  递归的将代码中的随机函数替换为随机数
++ */
++  private static String replaceRandom(String code){
++    String randStrRegex = "rand\\s*?\\(([0-9\\s]+),([0-9\\s]+)\\)";
++    Pattern p = Pattern.compile(randStrRegex);
++    Matcher m = p.matcher(code);
++    if(m.find())
++      code =  code.replaceFirst(
++              randStrRegex,
++              // 获得代码中随机函数参数，并生成随机数
++              rand(Integer.parseInt(m.group(1).trim()), Integer.parseInt(m.group(2).trim()))+"");
++    //System.out.println("Log: " + code);
++    Pattern pattern = Pattern.compile(randStrRegex);
++    Matcher match = pattern.matcher(code);
++    if(match.find())
++      code = replaceRandom(code);
++    return code;
++  }
++
++  /**
++  * 解析reverse函数
++  * reverse函数执行翻转节点状态的功能
++  * @param code
++  * @param storage        每个节点的节点编号和执行翻转动作的时间组成长度为2的节点信息数组，将
++  *                       所有节点的信息数组存储进storage。
++  * @return 去掉reverse函数之后的代码
++  */
++ private static String parseReverse(String code, ArrayList<String[]> storage){
++
++     code = replaceRandom(code);
++     String regex = "reverse\\s*?\\(([0-9\\s]+),([0-9\\s]+)\\)";
++     Pattern pattern = Pattern.compile(regex);
++     Matcher match = pattern.matcher(code);
++
++     while(match.find()){
++//                        有时间给这些println函数都弄成日志输出
++//                        System.out.println(match.group(1) + ": " + match.group(2));
++             storage.add(new String[]{match.group(1),  match.group(2)});
++     }
++
++     return code.replaceAll(regex, ";");
++ }
++
++ /**
++  * 解析kill节点函数(解析起来和reverse一毛一样)
++  * kill函数杀死节点
++  * @param code
++  * @param storage        每个节点的节点编号和执行死亡动作的时间组成长度为2的节点信息数组，将
++  *                                         所有节点的信息数组存储进storage。
++  * @return 去掉kill函数之后的代码
++  */
++ private static String parseKill(String code, ArrayList<String[]> storage){
++
++     code = replaceRandom(code);
++     String regex = "kill\\s*?\\(([0-9\\s]+),([0-9\\s]+)\\)";
++     Pattern pattern = Pattern.compile(regex);
++     Matcher match = pattern.matcher(code);
++
++     while(match.find()){
++//                        有时间给这些println函数都弄成日志输出
++//                        System.out.println(match.group(1) + ": " + match.group(2));
++      storage.add(new String[]{match.group(1),  match.group(2)});
++     }
++
++     return code.replaceAll(regex, ";");
++ }
++
++
++ /**
++  * 获得随机数
++  * @param min
++  * @param max
++  * @return [min, max)范围内的随机数
++  */
++ private static int rand(int min, int max){
++         return new Random().nextInt(max)%(max-min) + min;
++ }
++// tete_end
++
+   private String parseTimeout(String code) throws ScriptSyntaxErrorException {
+     Pattern pattern = Pattern.compile(
+         "TIMEOUT\\(" +
+@@ -131,11 +293,10 @@
+ 
+     timeoutTime = Long.parseLong(matcher.group(1))*Simulation.MILLISECOND;
+     timeoutCode = ";";
+-
+     matcher.reset(code);
+     code = matcher.replaceFirst(";");
+-
+     matcher.reset(code);
++
+     if (matcher.find()) {
+       throw new ScriptSyntaxErrorException("Only one timeout handler allowed");
+     }
+@@ -159,13 +320,10 @@
+     if (timeoutTime > 0) {
+       throw new ScriptSyntaxErrorException("Only one timeout handler allowed");
+     }
+-
+     timeoutTime = Long.parseLong(matcher.group(1))*Simulation.MILLISECOND;
+     timeoutCode = matcher.group(2);
+-
+     matcher.reset(code);
+     code = matcher.replaceFirst(";");
+-
+     matcher.reset(code);
+     if (matcher.find()) {
+       throw new ScriptSyntaxErrorException("Only one timeout handler allowed");
+@@ -219,7 +377,7 @@
+   public String getJSCode() {
+     return getJSCode(code, timeoutCode);
+   }
+-    
++
+   public static String getJSCode(String code, String timeoutCode) {
+     return
+     "timeout_function = null; " +
+@@ -230,7 +388,7 @@
+     "if (TIMEOUT) { SCRIPT_TIMEOUT(); } " +
+     "msg = new java.lang.String(msg); " +
+     "node.setMoteMsg(mote, msg); " +
+-    code + 
++    code +
+     "\n" +
+     "\n" +
+     "while (true) { SCRIPT_SWITCH(); } " /* SCRIPT ENDED */+
+diff -Naur cooja/java/org/contikios/cooja/plugins/ScriptRunner.java ../../x/contiki/tools/cooja/java/org/contikios/cooja/plugins/ScriptRunner.java
+--- cooja/java/org/contikios/cooja/plugins/ScriptRunner.java	2017-12-23 17:37:13.617644004 +0800
++++ ../../x/contiki/tools/cooja/java/org/contikios/cooja/plugins/ScriptRunner.java	2017-12-23 17:42:21.124669491 +0800
+@@ -51,6 +51,7 @@
+ import java.util.Observable;
+ import java.util.Observer;
+ 
++
+ import javax.script.ScriptException;
+ import javax.swing.AbstractAction;
+ import javax.swing.Action;
+@@ -88,6 +89,8 @@
+ import org.contikios.cooja.dialogs.MessageListUI;
+ import org.contikios.cooja.util.StringUtils;
+ 
++
++
+ @ClassDescription("Simulation script editor")
+ @PluginType(PluginType.SIM_CONTROL_PLUGIN)
+ public class ScriptRunner extends VisPlugin {
+@@ -102,6 +105,7 @@
+     }
+   }
+ 
++
+   final String[] EXAMPLE_SCRIPTS = new String[] {
+       "basic.js", "Various commands",
+       "helloworld.js", "Wait for 'Hello, world'",
+@@ -123,8 +127,14 @@
+   private File linkedFile = null;
+ 
+   public ScriptRunner(Simulation simulation, Cooja gui) {
++
+     super("Simulation script editor", gui, false);
++
+     this.simulation = simulation;
++//tete_begin
++// simulatuib对象包含有所有仿真的节点mote, 传递给ScriptParser, ScriptParser可以启动指定节点的CLI.
++    ScriptParser.setSimulation(simulation);
++//tete_end
+     this.engine = null;
+ 
+     /* Menus */
