@@ -10,7 +10,7 @@ step 2
 如果上述安装出现仓库验证失效情况,按照如下操作取消apt对GPG验证失效的源强制安装
 > **``` emacs -nw /etc/apt/apt.conf.d/70debconf ```**
 
-> 添加**```Acquire::AllowInsecureRepositories “true;```**
+> 添加 **```Acquire::AllowInsecureRepositories “true;```**
 
 完成上述配置,再重新安装
 
