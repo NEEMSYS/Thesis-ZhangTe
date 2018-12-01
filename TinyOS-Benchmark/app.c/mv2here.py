@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 import os
 import shutil
-src_path = '/media/tete/F/tinyos-main/apps/'
+src_path = '/media/tete/E/tinyos-main/apps/'
 dest_path = '/media/tete/E/theis/TinyOS-Benchmark/app.c/'
 
 def haveNCfile(walk_type):
