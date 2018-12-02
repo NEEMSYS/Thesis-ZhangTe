@@ -1,5 +1,6 @@
 # Thesis-ZhangTe
 
+## Installing TinyOS
 TinyOS环境配置:
 step 1
 > 下载TinyOS源码**```git clone https://github.com/yulincoder/tinyos-main.git```**, 注意这是我fork的仓库,非官方仓库
