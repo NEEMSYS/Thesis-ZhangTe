@@ -1,4 +1,6 @@
 # Thesis-ZhangTe
+本仓库包含了大部分与文章相关的数据,代码,工具和相关开源项目.
+仍有部分相关内容,数据,以及琐碎的工作难以迁至本仓库下.
 
 ## 环境配置
 ### 1. Installing TinyOS
@@ -16,7 +18,7 @@ step 2
 
 完成上述配置,再重新安装
 
-### 2. Docker Configuration
+### 2. Docker Configuration 
 * Docker 安装:  ... 补充
 
 * 添加当前用户到docker group
@@ -34,9 +36,18 @@ step 2
 
 > step 7: pkill x
 
-* Jupyter Notebook 安装与运行
+* Jupyter Notebook 安装与运行 (文章分析相关代码大部分在本环境下运行,环境使用Python3. 但仍有部分遗留代码使用Python2.)
 > step 1 : docker pull jupyter/datascience-notebook
 
 > step 2: 运行`docker run --rm -p 10000:8888 -e  GRANT_SUDO=yes -v "$PWD":/home/jovyan/work jupyter/datascience-notebook:latest`启动Jupyter notebook
 
 > 更多文档参考: https://hub.docker.com/r/jupyter/datascience-notebook/
+
+### 3. Cooja Configuration
+> step 1: **```git clone https://github.com/contiki-os/contiki ```**
+
+> step 2: 进入Cooja目录并构建Cooja `cd contiki/tool/cooja && ant run`
+
+> step 3: 按照[打补丁文件](https://github.com/NEEMSYS/Thesis-ZhangTe/blob/master/Patch-Cooja-TinyOS/README.md) 为Cooja打补丁, 补丁的作用在文章中有详细说明
+
+> declare: 由于补丁文件会带来jar交叉依赖, 因此必须在打补丁之前先构建一遍cooja先生成`鸡生蛋,蛋生鸡`中的蛋以避免该问题
