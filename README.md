@@ -23,6 +23,7 @@ step 2
 ### 2. Docker Configuration 
 * Docker 安装:  使用docker 官方脚本安装
 > `curl -fsSL https://get.docker.com -o get-docker.sh`
+
 > `sh get-docker.sh`
 
 * 添加当前用户到docker group
