@@ -1,6 +1,8 @@
 # Thesis-ZhangTe
-本仓库包含了大部分与文章相关的数据,代码,工具和相关开源项目.
+1. 本仓库包含了大部分与文章相关的数据,代码,工具和相关开源项目.
 仍有部分相关内容,数据,以及琐碎的工作难以迁至本仓库下.
+
+
 
 ## 环境配置
 ### 1. Installing TinyOS
@@ -19,7 +21,9 @@ step 2
 完成上述配置,再重新安装
 
 ### 2. Docker Configuration 
-* Docker 安装:  ... 补充
+* Docker 安装:  使用docker 官方脚本安装
+> `curl -fsSL https://get.docker.com -o get-docker.sh`
+> `sh get-docker.sh`
 
 * 添加当前用户到docker group
 > step 1: 执行`cat /etc/group | grep docker`, 确认docker组是否存在, 如果docker group不存在,则 `sudo groupadd docker` 添加docker 组.
@@ -51,3 +55,6 @@ step 2
 > step 3: 按照[打补丁文件](https://github.com/NEEMSYS/Thesis-ZhangTe/blob/master/Patch-Cooja-TinyOS/README.md) 为Cooja打补丁, 补丁的作用在文章中有详细说明
 
 > declare: 由于补丁文件会带来jar交叉依赖, 因此必须在打补丁之前先构建一遍cooja先生成`鸡生蛋,蛋生鸡`中的蛋以避免该问题
+
+#### 4. no_gui 运行Cooja
+> 执行`ant run_nogui -Dargs='path of csc file'`, 需要注意的是cooja的路径是以`cooja/build/`作为当前目录.因此无论是生成log文件还是csc文件的路径都是以`cooja/build/`作为起始路径
