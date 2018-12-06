@@ -4,3 +4,6 @@
 [submodule "tinyos-main"]
 	path = tinyos-main
 	url = https://github.com/tinyos/tinyos-main
+[submodule "pycparser"]
+	path = pycparser
+	url = https://github.com/eliben/pycparser.git
