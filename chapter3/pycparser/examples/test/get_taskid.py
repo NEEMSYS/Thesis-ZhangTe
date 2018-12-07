@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-
+import os
 def dec_to_hex(num):
     """ num : string
     range: 0x00-0x00ff
@@ -56,9 +56,37 @@ def get_task_id(task_path):
     
     return task_id, task_id_temp # 分别以十六进制和十进制表示
 
+
+import count_lines_func as cf
+def getalltask_lines(srcfile):
+    a, b = get_task_id(srcfile)
+    cf.ast_init(srcfile)
+    tasks = {}
+    for idx, e in enumerate(a):
+        task_name = e[0] + '__runTask'
+        tasks[task_name] = cf.f_lines(task_name)
+        print('\t[INFO]:{}/{}. {} \tscale:{}'.format(idx, len(a), e, tasks[task_name]))        
+    task_info_path = srcfile[:-5] + 'task_scale.csv'#srcfile.replace('/app.c', '/task-scale.csv')
+    with open(task_info_path, 'w+') as f:
+      print('\t[SAVE]: Save to {}'.format(task_info_path))
+      for k, v in tasks.items():
+          f.write(k + ',' + str(v) + '\n')
+
+
+        
 if __name__ == '__main__':
-    a, b = get_task_id('./app.c')
-    print (a, '\n\n', b)
-    import json
-    print (json.dumps(b, indent=4))
+    import time
+    app_root = '../../../../TinyOS-Benchmark/app.c/'
+    paths = list(os.walk(app_root))
+    vaild_app = []
+    for e in paths:
+        if 'app.c' in e[2]:
+            vaild_app.append(os.path.join(e[0], 'app.c'))
+    for idx, e in enumerate(vaild_app):
+        print('[' + str(idx) + '/' + str(len(vaild_app)) + ']', e)
+        getalltask_lines(e)
+    #getalltask_lines('./app.c')
+    #print (a, '\n\n', b)
+    
+
 

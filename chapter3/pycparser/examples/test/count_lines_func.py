@@ -69,14 +69,16 @@ def count_numline_func(func_start):
 
 def get_func_lines(func, ast):
     """ 根据一个函数名,获得该函数占了多少行
+    说明: 如果函数定义无效,例如函数内部没有任何语句,则在生成AST的过程中编译器前端不会生成该函数的函数体信息,因此返回值将为None
     """
     info = None
     for e in ast:
         if func in e:
             if is_funcdef(e, ast):
                 info = get_func_name_line(e)
-                break
-    return count_numline_func(info[1])
+                if func == info[0]:
+                    break
+    return None if not info else count_numline_func(info[1])
 
 def get_funcast_line(func):
     """ 根据函数名获得函数在源文件中的位置
@@ -96,22 +98,26 @@ def ast_init(src_file):
     with open(c_fn, 'r') as f:
         src = f.readlines()
     src_linenum = zip(range(1, len(src)+1), src) # add number of lines
-    src_linenum = map(lambda e: list(e), src_linenum)
+    src_linenum = list(map(lambda e: list(e), src_linenum))
 
     # execute script, test_libclang, to get ast into `ast`
     ast = os.popen('python test_libclang.py %s'%c_fn).readlines()
 
 
 def func_lines(func):
+    """ 根据函数名获得该函数占了多少行 """
     global ast
-    return get_func_lines(func, ast)
+    lines = get_func_lines(func, ast)
+    return 0 if lines == None else lines
 
-
+# 存储所有函数内调用的函数,否则递归开销太大了
+all_function_involved = {}
 def involve_func(func):
     """  获得函数func递归调用的所有函数. 不同函数调用相同函数,返回值会有重复,set处理
     Args: func: str 函数名字
     Retval: list, 包含了所有被func调用的函数
-    """
+    """ 
+    global all_function_involved   
     global funcs
     idx = 0
     deep = 0
@@ -129,20 +135,103 @@ def involve_func(func):
         if d <= deep: break
     if temp_funcs == []: return []
     for e in temp_funcs:
-        temp_funcs += involve_func(e)
+        if e not in all_function_involved:
+            all_function_involved[e] = involve_func(e)
+            temp_funcs += all_function_involved[e]
+            print('\t\tadd', e, 'to { }', len(all_function_involved))
+        else:
+            print('[\t:)]', e, 'in the { }')
+            temp_funcs += all_function_involved[e]
     return temp_funcs
     
-    
-    
+store = {} # 已经计算的存储在这里    
+def recursion_func_lines(func):
+    global store
+    funcs = [func] + involve_func(func)# all function involed
+    funcs = list(set(funcs))
+    lines_num = 0
+    print('\t[info]: get all functions', '...')
+    for f in funcs:
+        if f in store:
+            lines_num += store[f]
+        else:
+            lines = func_lines(f)
+            store[f] = lines
+            lines_num += lines
+    return lines_num
+
+
+def no_recursion_sonfunc(func):
+    """  获得函数func下所有函数,不包括函数的函数,即不递归
+    Args: func: str 函数名字
+    Retval: list, 包含了所有被func调用的函数
+    """ 
+    global all_function_involved   
+    global funcs
+    idx = 0
+    deep = 0
+    temp_funcs = []
+    for i in range(len(ast)):
+        if func in ast[i]:
+            if is_funcdef(ast[i], ast):
+                deep = get_deep(ast[i])
+                idx = i + 1
+    for i in range(idx, len(ast)):
+        d = get_deep(ast[i])
+        if d > deep and 'CursorKind.CALL_EXPR' in ast[i]:
+            tempfunc =  re.findall("CursorKind.CALL_EXPR (.*?) .+?, line.+?", ast[i])[0]
+            if tempfunc not in temp_funcs: temp_funcs.append(tempfunc)
+        if d <= deep: break
+    return [] if temp_funcs == [] else temp_funcs
+
+son_fun = {}
+
+def no_recursion_func_lines(func):
+    """ 非递归方法计算func的函数及其所有孙子函数的行数
+    """
+    global son_fun
+    ini = [func]
+    idx = 0
+    upto = len(ini) 
+    while True:
+        upto = len(ini)
+        while idx < upto:
+            if ini[idx] not in son_fun:
+                temp = no_recursion_sonfunc(ini[idx])
+                son_fun[ini[idx]] = temp
+            else:
+                temp = son_fun[ini[idx]]
+            for e2 in temp:
+                if e2 not in ini:
+                    ini.append(e2)
+            idx += 1
+        if upto == len(ini): break
+    return ini
+            
+_funcs_lines = {}
+
+def f_lines(func):
+    fs = no_recursion_func_lines(func)
+    lines_num = 0
+    for e in fs:
+        if e not in _funcs_lines:
+            temp_num = func_lines(e)
+            _funcs_lines[e] = temp_num
+            lines_num += temp_num
+        else:
+            lines_num += _funcs_lines[e]
+    return lines_num
 
 if __name__ == '__main__':
-    '''
+
     ast_init('./app.c')
-    print(func_lines('ArbiterP__1__grantedTask__runTask'))
-    '''
-    ast_init('test_app.c')
-    print(set(involve_func('main')))
-    #print(funcs)
+    #print(recursion_func_lines('ArbiterP__1__grantedTask__runTask'))
+    print(f_lines('ArbiterP__1__grantedTask__runTask'))
+    #ast_init('test_app.c')
+    #print(f_lines('main'))    
+    #ast_init('test_app.c')
+    
+
 '''
 for e in ast:
     if is_funcdef(e, ast):
