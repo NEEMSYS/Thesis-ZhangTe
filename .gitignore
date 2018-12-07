@@ -1,6 +1,6 @@
 *.txt
-TinyOS-Benchmark/dataset/
-*.pkl
+./TinyOS-Benchmark/dataset/*
+#*.pkl
 \#*\#
 
 # Python reglur
