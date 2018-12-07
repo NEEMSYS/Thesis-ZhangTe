@@ -8,7 +8,11 @@ import sys
 src_linenum = None
 c_fn = None
 ast = None
-
+# 存储所有函数内调用的函数,否则递归开销太大了
+all_function_involved = {}
+store = {} # 已经计算的存储在这里
+son_fun = {}
+_funcs_lines = {}
 
 def get_deep(line_ast):
     # to obtain the deepin of a line ast rely on the number of '\t'
@@ -88,30 +92,12 @@ def get_funcast_line(func):
             if is_funcdef(e, ast):
                 return get_func_name_line(e)[1]
                 
-
-
-def ast_init(src_file):
-    global src_linenum
-    global c_fn
-    global ast
-    c_fn = src_file
-    with open(c_fn, 'r') as f:
-        src = f.readlines()
-    src_linenum = zip(range(1, len(src)+1), src) # add number of lines
-    src_linenum = list(map(lambda e: list(e), src_linenum))
-
-    # execute script, test_libclang, to get ast into `ast`
-    ast = os.popen('python test_libclang.py %s'%c_fn).readlines()
-
-
 def func_lines(func):
     """ 根据函数名获得该函数占了多少行 """
     global ast
     lines = get_func_lines(func, ast)
     return 0 if lines == None else lines
 
-# 存储所有函数内调用的函数,否则递归开销太大了
-all_function_involved = {}
 def involve_func(func):
     """  获得函数func递归调用的所有函数. 不同函数调用相同函数,返回值会有重复,set处理
     Args: func: str 函数名字
@@ -144,7 +130,7 @@ def involve_func(func):
             temp_funcs += all_function_involved[e]
     return temp_funcs
     
-store = {} # 已经计算的存储在这里    
+
 def recursion_func_lines(func):
     global store
     funcs = [func] + involve_func(func)# all function involed
@@ -184,7 +170,6 @@ def no_recursion_sonfunc(func):
         if d <= deep: break
     return [] if temp_funcs == [] else temp_funcs
 
-son_fun = {}
 
 def no_recursion_func_lines(func):
     """ 非递归方法计算func的函数及其所有孙子函数的行数
@@ -208,7 +193,6 @@ def no_recursion_func_lines(func):
         if upto == len(ini): break
     return ini
             
-_funcs_lines = {}
 
 def f_lines(func):
     fs = no_recursion_func_lines(func)
@@ -221,6 +205,37 @@ def f_lines(func):
         else:
             lines_num += _funcs_lines[e]
     return lines_num
+
+
+def ast_init(src_file):
+    global src_linenum
+    global c_fn
+    global ast
+    global all_function_involved
+    global store
+    global son_fun
+    global _funcs_lines
+    
+    src_linenum = None
+    c_fn = None
+    ast = None
+    # 存储所有函数内调用的函数,否则递归开销太大了
+    all_function_involved = {}
+    store = {} # 已经计算的存储在这里
+    son_fun = {}
+    _funcs_lines = {}
+
+    
+    c_fn = src_file
+    with open(c_fn, 'r') as f:
+        src = f.readlines()
+    src_linenum = zip(range(1, len(src)+1), src) # add number of lines
+    src_linenum = list(map(lambda e: list(e), src_linenum))
+
+    # execute script, test_libclang, to get ast into `ast`
+    ast = os.popen('python test_libclang.py %s'%c_fn).readlines()
+
+
 
 if __name__ == '__main__':
 
