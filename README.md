@@ -1,8 +1,21 @@
-# Thesis-ZhangTe
+# Project of ZhangTe's Thesis
 1. 本仓库包含了大部分与文章相关的数据,代码,工具和相关开源项目.
 仍有部分相关内容,数据,以及琐碎的工作难以迁至本仓库下.
 
-
+## Tools related
+1. TinyOS
+2. Contiki
+3, Docker
+4. Clang
+5. Cooja
+6. pycparse
+7. Data science packages underlying python 2&3
+8. MSP430-GCC tool chain 
+9. Linux, Emacs and similar tools on Linux
+10. TelosB motes (Hardware)
+11. Jupyter Notebook
+12. IEEE 802.15.2 Sniffer ()
+13. rtl2dot (Call graph)
 
 ## 一. 环境配置
 ### 1. Installing TinyOS
