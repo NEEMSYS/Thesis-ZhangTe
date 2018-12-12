@@ -67,7 +67,7 @@ step 2
 ## 二. 预处理数据
 > step 1: 进入[TinyOS-Benchmark](https://github.com/NEEMSYS/Thesis-ZhangTe/tree/master/TinyOS-Benchmark)目录
 
-> step 2: 按照上述目录README下载任务日志数据集,(但是由于[七牛云](https://www.qiniu.com/)于2018年夏天收回测试域名,因此任务数据集链接已经无法访问数据集)
+> step 2: 按照上述目录README下载任务日志数据集,(但是由于[七牛云](https://www.qiniu.com/)于2018年夏天收回测试域名,因此任务数据集链接已经无法访问数据集,有时间了给数据集挪个窝)
 
 > step 3: 执行`python2 ./preprocess.py` 程序会预处理raw data, 并将预处理后的数据存储于**preprocessed-dataset**目录
 
