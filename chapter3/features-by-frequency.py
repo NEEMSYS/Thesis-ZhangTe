@@ -75,4 +75,5 @@ for k, v in paths_data.items():
     plt.plot([temp_x for i in range(5)], y, marker='o', linestyle=' ')
     temp_x += 1
 '''
-plt.show()    
+plt.show()
+
