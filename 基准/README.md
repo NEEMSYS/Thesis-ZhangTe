@@ -2,7 +2,7 @@
 A TinyOS'task exection sequence benchmark and data set
 This profile.py analyze the dataset to create a benchmark
 
-To acquire the dataset, typeing following command:
+To acquire the dataset, typing following command:
 ```shell
 curl -o dataset http://p7omueu6s.bkt.clouddn.com/tinyos-dataset.zip
 unzip -o -d TinyOS-Benchmark/dataset tinyos-dataset.zip
