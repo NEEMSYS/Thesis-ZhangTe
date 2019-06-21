@@ -1,0 +1,2 @@
+with open('pre-raw-seq.txt', 'r') as f:
+    logs = f.readlines()

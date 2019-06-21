@@ -7,3 +7,6 @@
 [submodule "pycparser"]
 	path = pycparser
 	url = https://github.com/eliben/pycparser.git
+[submodule "inject-to-branch"]
+	path = inject-to-branch
+	url = https://github.com/NEEMSYS/inject-to-branch.git

@@ -87,3 +87,9 @@ step 2
 > step 4: 进入[pycparse](https://github.com/NEEMSYS/Thesis-ZhangTe/tree/master/chapter3/pycparser/examples/test), 执行`python3 get_task_id.py`使用AST提取所有任务,并代码行数分析任务规模. 分析结果以*.csv格式放置于每个应用app.c所在目录下
 
 说明: 由于研究涉及多个时间阶段,因此代码既有py2也有py3
+
+
+## 三. 说明
+chapter2 包含第二章数据分析部分，chapter3为第三章T2PAD代码，chapter5为第五章GRU神经网络部分，inject-to-branch为第五章分支点插装子模块，该仓库也在本组织下．第4章节T2PAD.U的代码在T2PAD基础上进行，其中最终的插装用的异常检测C代码是我手工写的，没有自动生成．
+
+## 四．注意，数据集链接失效了，文件还在，但是由于七牛云修改服务，不再提供免费的二级域名，因此那个url失效了．由于暂时还没找到合适的存储地方，因此先就这样吧，如有需要，可以找我下载（如果是想接着继续进行研究，不建议这样做，这样无助于理解本文涉及程序和进一步研究）
